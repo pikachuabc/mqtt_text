@@ -25,7 +25,6 @@ def send_img():
 if __name__ == '__main__':
     client = mqtt.Client()
     try:
-        #sensor_No = input("请输入传感器编号")
         sensor_No = "21"
         client.will_set(pub_topic, "sensor " + sensor_No + " is offline")
         client.connect(HOST, 1883, 60)
