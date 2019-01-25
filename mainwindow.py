@@ -25,7 +25,7 @@ class Ui_MainWindow(object):
         self.sensor1.setGeometry(QtCore.QRect(140, 82, 81, 41))
         self.sensor1.setObjectName("sensor1")
         self.sensor1_data= QtWidgets.QLabel(self.centralWidget)
-        self.sensor1_data.setGeometry(QtCore.QRect(220, 81, 81, 41))
+        self.sensor1_data.setGeometry(QtCore.QRect(220, 81, 121, 41))
         self.sensor1_data.setObjectName("sensor1_data")
 
 
@@ -33,7 +33,7 @@ class Ui_MainWindow(object):
         self.sensor2.setGeometry(QtCore.QRect(140, 120, 82, 41))
         self.sensor2.setObjectName("sensor2")
         self.sensor2_data= QtWidgets.QLabel(self.centralWidget)
-        self.sensor2_data.setGeometry(QtCore.QRect(220, 121, 81, 41))
+        self.sensor2_data.setGeometry(QtCore.QRect(220, 121, 121, 41))
         self.sensor2_data.setObjectName("sensor2_data")
 
         MainWindow.setCentralWidget(self.centralWidget)
@@ -43,15 +43,15 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.sensor1.setText(_translate("MainWindow", "传感器1数据"))
+        self.sensor1.setText(_translate("MainWindow", "湿度"))
         self.sensor1_data.setText(_translate("MainWindow", "#"))
-        self.sensor2.setText(_translate("mMainWindow", "传感器2数据"))
+        self.sensor2.setText(_translate("mMainWindow", "温度"))
         self.sensor2_data.setText(_translate("MainWindow", "#"))
 
     def change_label(self):
-        Client_connect = MQTT_Client()
-        Client_connect.MQTT()
-        change=QtScheduler()
+        Client_connect = MQTT_Client_initial()
+        Client_connect.MQTT_connect()
+        change = QtScheduler()#qt定时器
         change.add_job(func=self.change,trigger="interval", seconds = 2)
         change.start()
 
@@ -60,17 +60,17 @@ class Ui_MainWindow(object):
         self.sensor1_data.repaint()
 
 
-class MQTT_Client(Ui_MainWindow):
+class MQTT_Client_initial(Ui_MainWindow):
     client = mqtt.Client()
     def on_connect(self, client, userdata, flags, rc):
         print("Connected with result code " + str(rc))
         client.subscribe("chat")
 
     def on_message(self, client, userdata, msg):
-        Ui_MainWindow.abc = msg.payload.decode()
+        Ui_MainWindow.received_data = msg.payload.decode()
         print(Ui_MainWindow.received_data)
 
-    def MQTT(self):
+    def MQTT_connect(self):
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
         HOST = '127.0.0.1'
